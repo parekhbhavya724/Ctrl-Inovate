@@ -155,15 +155,9 @@ def download_dossier(eid: str):
 
 frontend_dir = os.path.join(PROJECT_DIR, "frontend")
 if os.path.exists(frontend_dir):
-    app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+    app.mount("/static", StaticFiles(directory=frontend_dir), name="static_legacy")
+    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="static_root")
 
-@app.get("/")
-def serve_index():
-    index_path = os.path.join(frontend_dir, "index.html")
-    if os.path.exists(index_path):
-        with open(index_path, "r", encoding="utf-8") as f:
-            return HTMLResponse(f.read())
-    return HTMLResponse("<h1>NetSentinel AI Backend Online.</h1>")
 
 if __name__ == "__main__":
     import os
