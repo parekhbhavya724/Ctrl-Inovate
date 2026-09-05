@@ -1,0 +1,21 @@
+record_id,entity_id,prior_case_id,offense_type,date,status
+CRIM_REC_001,ENT_011,CASE_2024_490,Section 420 IPC (Cheating & Fraud),2024-06-18,Convicted (Bail)
+CRIM_REC_002,ENT_012,CASE_2021_456,Arms Act Section 25 (Unlawful Arms),2021-10-01,Absconding / Wanted
+CRIM_REC_003,ENT_014,CASE_2019_990,Section 307 IPC (Attempted Extortion),2019-05-09,Convicted (Bail)
+CRIM_REC_004,ENT_019,CASE_2022_155,NDPS Act Section 21 (Narcotics Smuggling),2022-04-16,Convicted (Bail)
+CRIM_REC_005,ENT_021,CASE_2021_652,IT Act Section 66D (Cyber Impersonation),2021-07-31,Pending Trial
+CRIM_REC_006,ENT_025,CASE_2021_614,Section 120B IPC (Criminal Conspiracy),2021-08-31,Pending Trial
+CRIM_REC_007,ENT_008,CASE_2019_151,Section 120B IPC (Criminal Conspiracy),2019-09-20,Absconding / Wanted
+CRIM_REC_008,ENT_001,CASE_2022_870,IT Act Section 66D (Cyber Impersonation),2022-12-31,Convicted (Bail)
+CRIM_REC_009,ENT_020,CASE_2020_542,NDPS Act Section 21 (Narcotics Smuggling),2020-06-28,Absconding / Wanted
+CRIM_REC_010,ENT_005,CASE_2019_235,NDPS Act Section 21 (Narcotics Smuggling),2019-08-30,Convicted (Bail)
+CRIM_REC_011,ENT_003,CASE_2023_685,Section 120B IPC (Criminal Conspiracy),2023-05-04,Convicted (Bail)
+CRIM_REC_012,ENT_018,CASE_2024_508,NDPS Act Section 21 (Narcotics Smuggling),2024-02-24,Convicted (Bail)
+CRIM_REC_013,ENT_024,CASE_2022_613,Arms Act Section 25 (Unlawful Arms),2022-06-21,Pending Trial
+CRIM_REC_014,ENT_007,CASE_2019_592,IT Act Section 66D (Cyber Impersonation),2019-07-07,Pending Trial
+CRIM_REC_015,ENT_002,CASE_2023_504,Section 120B IPC (Criminal Conspiracy),2023-06-22,Pending Trial
+CRIM_REC_016,ENT_022,CASE_2024_730,Section 120B IPC (Criminal Conspiracy),2024-04-17,Pending Trial
+CRIM_REC_017,ENT_013,CASE_2020_173,NDPS Act Section 21 (Narcotics Smuggling),2020-09-19,Absconding / Wanted
+CRIM_REC_018,ENT_009,CASE_2021_801,IT Act Section 66D (Cyber Impersonation),2021-08-17,Convicted (Bail)
+CRIM_REC_019,ENT_026,CASE_2019_787,Arms Act Section 25 (Unlawful Arms),2019-04-06,Absconding / Wanted
+CRIM_REC_020,ENT_004,CASE_2022_456,Section 307 IPC (Attempted Extortion),2022-02-05,Acquitted
