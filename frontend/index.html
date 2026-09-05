@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NetSentinel AI // Criminal Network Intelligence Platform</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Cytoscape.js for graph visualization -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+</head>
+<body class="dark-theme">
+  <!-- TOP COMMAND BAR -->
+  <header class="top-nav">
+    <div class="brand-section">
+      <div class="brand-badge">POLICE INTELLIGENCE</div>
+      <h1 class="brand-title">NETSENTINEL <span class="ai-glow">AI</span></h1>
+      <span class="system-tag">v2.0 // DEEP GRAPH FORENSICS</span>
+    </div>
+
+    <!-- Live Telemetry Stats -->
+    <div class="telemetry-bar">
+      <div class="stat-pill">
+        <span class="stat-label">ENTITIES</span>
+        <span class="stat-val" id="stat-entities">75</span>
+      </div>
+      <div class="stat-pill stat-criminal">
+        <span class="stat-label">CRIMINALS</span>
+        <span class="stat-val" id="stat-criminals">27</span>
+      </div>
+      <div class="stat-pill stat-civilian">
+        <span class="stat-label">CIVILIANS</span>
+        <span class="stat-val" id="stat-civilians">48</span>
+      </div>
+      <div class="stat-pill stat-benchmark">
+        <span class="stat-label">BENCHMARK ACCURACY</span>
+        <span class="stat-val highlight-green" id="stat-accuracy">100%</span>
+      </div>
+    </div>
+
+    <!-- Top Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn btn-outline" id="btn-kingpins" title="Highlight Syndicate Leaders">
+        <span class="icon">👑</span> Kingpins
+      </button>
+      <button class="btn btn-outline" id="btn-bridges" title="Highlight Cross-Network Brokers">
+        <span class="icon">🌉</span> Bridges
+      </button>
+      <button class="btn btn-outline" id="btn-smurfing" title="Show Structuring/Smurfing Rings">
+        <span class="icon">🚨</span> Smurfing Rings
+      </button>
+      <button class="btn btn-benchmark" id="btn-benchmark" title="View Accuracy Scorecard vs Ground Truth">
+        <span class="icon">📊</span> Ground Truth Benchmark
+      </button>
+      <button class="btn btn-primary" id="btn-copilot" title="Open AI Investigative Copilot">
+        <span class="icon">🤖</span> AI Copilot
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="app-layout">
+    <!-- LEFT CONTROL PANEL -->
+    <aside class="sidebar-left">
+      <div class="panel-header">
+        <h2>FILTER & INVESTIGATE</h2>
+      </div>
+
+      <!-- Search Input -->
+      <div class="control-group">
+        <label for="search-input">Search Entity / Phone / Plate / Org</label>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="e.g. Advik, WB-02, +91 95350...">
+          <button id="btn-search-clear">✕</button>
+        </div>
+      </div>
+
+      <!-- Threat Score Slider -->
+      <div class="control-group">
+        <div class="slider-header">
+          <label for="threat-slider">Min Threat Score:</label>
+          <span class="slider-val" id="threat-slider-val">0</span>
+        </div>
+        <input type="range" id="threat-slider" min="0" max="95" value="0" step="5">
+      </div>
+
+      <!-- Toggles -->
+      <div class="control-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="toggle-criminal-only" checked>
+          <span>Show Suspects & Criminals Only</span>
+        </label>
+      </div>
+
+      <!-- Syndicate Filter -->
+      <div class="control-group">
+        <label>Filter Syndicate</label>
+        <select id="select-syndicate">
+          <option value="">All Syndicates (Alpha, Beta, Gamma, Delta)</option>
+          <option value="COMMUNITY_1">Syndicate Alpha (Hawala & Cargo)</option>
+          <option value="COMMUNITY_2">Syndicate Beta (Logistics & Enforcers)</option>
+          <option value="COMMUNITY_3">Syndicate Gamma (Cyber & Phishing)</option>
+          <option value="COMMUNITY_4">Syndicate Delta (Arms & Extortion)</option>
+        </select>
+      </div>
+
+      <!-- Role Filter -->
+      <div class="control-group">
+        <label>Filter Role</label>
+        <select id="select-role">
+          <option value="">All Detected Roles</option>
+          <option value="Kingpin">Kingpin / Ring Leader</option>
+          <option value="Bridge">Cross-Network Bridge</option>
+          <option value="Mule">Financial Mule / Account Mgr</option>
+          <option value="Hawala">Hawala Broker / Conduit</option>
+          <option value="Front">Front Org Operative</option>
+          <option value="Civilian">Uninvolved Civilian</option>
+        </select>
+      </div>
+
+      <!-- Graph Legend -->
+      <div class="legend-section">
+        <h3>SYNDICATE LEGEND</h3>
+        <div class="legend-item"><span class="badge badge-alpha"></span> NET_ALPHA (Hawala / Org)</div>
+        <div class="legend-item"><span class="badge badge-beta"></span> NET_BETA (Logistics / Cartel)</div>
+        <div class="legend-item"><span class="badge badge-gamma"></span> NET_GAMMA (Phishing / Mules)</div>
+        <div class="legend-item"><span class="badge badge-delta"></span> NET_DELTA (Arms / Extortion)</div>
+        <div class="legend-item"><span class="badge badge-kingpin">👑</span> Kingpin (Double Ring)</div>
+        <div class="legend-item"><span class="badge badge-bridge">🌉</span> Bridge Connector</div>
+        <div class="legend-item"><span class="badge badge-civilian"></span> Uninvolved Civilian</div>
+      </div>
+
+      <!-- Quick Graph Controls -->
+      <div class="graph-actions">
+        <button class="btn-sm" id="btn-fit-graph">Fit View</button>
+        <button class="btn-sm" id="btn-reset-layout">Relayout</button>
+      </div>
+    </aside>
+
+    <!-- CENTER GRAPH CANVAS -->
+    <section class="canvas-container">
+      <div id="cy"></div>
+      <div id="graph-loading" class="graph-loading">Analyzing Multi-Source Crime Intelligence Graph...</div>
+    </section>
+
+    <!-- RIGHT INSPECTOR DRAWER -->
+    <aside class="sidebar-right" id="inspector-panel">
+      <div class="panel-header">
+        <h2>SUSPECT FORENSICS</h2>
+        <button class="btn-close" id="btn-close-inspector">✕</button>
+      </div>
+
+      <div id="inspector-content" class="inspector-content">
+        <div class="empty-state">
+          <span class="icon-big">🎯</span>
+          <p>Click any node or link in the graph to inspect 360° intelligence dossiers, financial flows, and police cases.</p>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- COPILOT CHAT MODAL / DRAWER -->
+  <div class="copilot-drawer" id="copilot-drawer">
+    <div class="copilot-header">
+      <div class="copilot-title">
+        <span class="status-indicator"></span>
+        <h3>AI CASE COPILOT // ANALYST</h3>
+      </div>
+      <button class="btn-close" id="btn-close-copilot">✕</button>
+    </div>
+
+    <!-- Suggested Quick Prompts -->
+    <div class="quick-prompts">
+      <button class="prompt-chip" data-prompt="Who are the kingpins?">👑 Who are the Kingpins?</button>
+      <button class="prompt-chip" data-prompt="Explain the smurfing money laundering rings">🚨 Smurfing Rings</button>
+      <button class="prompt-chip" data-prompt="Find conspiracy path between Advik Maharaj and Deepa Yadav">🔍 Path: Advik to Deepa</button>
+      <button class="prompt-chip" data-prompt="Who are the cross-network bridge connectors?">🌉 Bridge Connectors</button>
+    </div>
+
+    <div class="copilot-messages" id="copilot-messages">
+      <div class="message assistant-message">
+        <strong>NetSentinel Analyst:</strong> Ready to interrogate the case graph. You can ask about suspect backgrounds, money muling cycles, phone contact chains, or conspiracy paths between suspects.
+      </div>
+    </div>
+
+    <div class="copilot-input-bar">
+      <input type="text" id="copilot-input" placeholder="Ask anything: e.g. Why is Ranveer Chatterjee a key bridge?">
+      <button id="btn-send-copilot" class="btn btn-primary">Send</button>
+    </div>
+  </div>
+
+  <!-- BENCHMARK MODAL -->
+  <div class="modal-overlay" id="benchmark-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>📊 GROUND TRUTH BENCHMARK SCORECARD</h2>
+        <button class="btn-close" id="btn-close-modal">✕</button>
+      </div>
+      <div class="modal-body" id="benchmark-content">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

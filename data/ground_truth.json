@@ -1,0 +1,716 @@
+{
+  "ENT_001": {
+    "name": "Advik Maharaj",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_ALPHA"
+    ],
+    "primary_role": "Kingpin / Ring Leader",
+    "network_roles": {
+      "NET_ALPHA": "Kingpin / Ring Leader"
+    }
+  },
+  "ENT_002": {
+    "name": "Charan Chahal",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_ALPHA"
+    ],
+    "primary_role": "Key Lieutenant",
+    "network_roles": {
+      "NET_ALPHA": "Key Lieutenant"
+    }
+  },
+  "ENT_003": {
+    "name": "Amruta Chander",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_ALPHA"
+    ],
+    "primary_role": "Hawala Broker",
+    "network_roles": {
+      "NET_ALPHA": "Hawala Broker"
+    }
+  },
+  "ENT_004": {
+    "name": "Ira Saini",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_ALPHA"
+    ],
+    "primary_role": "Financial Mule",
+    "network_roles": {
+      "NET_ALPHA": "Financial Mule"
+    }
+  },
+  "ENT_005": {
+    "name": "Aarush Dutta",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_ALPHA"
+    ],
+    "primary_role": "Financial Mule",
+    "network_roles": {
+      "NET_ALPHA": "Financial Mule"
+    }
+  },
+  "ENT_006": {
+    "name": "Garima Kale",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_ALPHA"
+    ],
+    "primary_role": "Shell Company Director",
+    "network_roles": {
+      "NET_ALPHA": "Shell Company Director"
+    }
+  },
+  "ENT_007": {
+    "name": "Ranveer Chatterjee",
+    "is_criminal": true,
+    "is_bridge": true,
+    "networks": [
+      "NET_ALPHA",
+      "NET_BETA"
+    ],
+    "primary_role": "Cross-Network Bridge Connector",
+    "network_roles": {
+      "NET_ALPHA": "Bridge Connector (Hawala Conduit)",
+      "NET_BETA": "Bridge Connector (Money Handler)"
+    }
+  },
+  "ENT_008": {
+    "name": "Anthony Sharaf",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_ALPHA"
+    ],
+    "primary_role": "Operative",
+    "network_roles": {
+      "NET_ALPHA": "Operative"
+    }
+  },
+  "ENT_009": {
+    "name": "Balveer Memon",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_BETA"
+    ],
+    "primary_role": "Kingpin / Cartel Boss",
+    "network_roles": {
+      "NET_BETA": "Kingpin / Cartel Boss"
+    }
+  },
+  "ENT_010": {
+    "name": "Bhavya Bath",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_BETA"
+    ],
+    "primary_role": "Logistics Coordinator",
+    "network_roles": {
+      "NET_BETA": "Logistics Coordinator"
+    }
+  },
+  "ENT_011": {
+    "name": "Jackson Chaudhuri",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_BETA"
+    ],
+    "primary_role": "Warehouse Manager",
+    "network_roles": {
+      "NET_BETA": "Warehouse Manager"
+    }
+  },
+  "ENT_012": {
+    "name": "Rajata Gaba",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_BETA"
+    ],
+    "primary_role": "Enforcer",
+    "network_roles": {
+      "NET_BETA": "Enforcer"
+    }
+  },
+  "ENT_013": {
+    "name": "Kiaan Bora",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_BETA"
+    ],
+    "primary_role": "Couriers/Distributor",
+    "network_roles": {
+      "NET_BETA": "Couriers/Distributor"
+    }
+  },
+  "ENT_014": {
+    "name": "Gautami Shere",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_BETA"
+    ],
+    "primary_role": "Couriers/Distributor",
+    "network_roles": {
+      "NET_BETA": "Couriers/Distributor"
+    }
+  },
+  "ENT_015": {
+    "name": "Nicholas Bhalla",
+    "is_criminal": true,
+    "is_bridge": true,
+    "networks": [
+      "NET_BETA",
+      "NET_GAMMA"
+    ],
+    "primary_role": "Cross-Network Bridge Connector",
+    "network_roles": {
+      "NET_BETA": "Bridge Connector (Identity Supplier)",
+      "NET_GAMMA": "Bridge Connector (Data Broker)"
+    }
+  },
+  "ENT_016": {
+    "name": "Suhani Loyal",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_GAMMA"
+    ],
+    "primary_role": "Kingpin / Tech Lead",
+    "network_roles": {
+      "NET_GAMMA": "Kingpin / Tech Lead"
+    }
+  },
+  "ENT_017": {
+    "name": "Hitesh Tata",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_GAMMA"
+    ],
+    "primary_role": "Phishing Kit Operator",
+    "network_roles": {
+      "NET_GAMMA": "Phishing Kit Operator"
+    }
+  },
+  "ENT_018": {
+    "name": "Kevin Dewan",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_GAMMA"
+    ],
+    "primary_role": "Call Center Handler",
+    "network_roles": {
+      "NET_GAMMA": "Call Center Handler"
+    }
+  },
+  "ENT_019": {
+    "name": "Tanish Rastogi",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_GAMMA"
+    ],
+    "primary_role": "SIM Card Extractor",
+    "network_roles": {
+      "NET_GAMMA": "SIM Card Extractor"
+    }
+  },
+  "ENT_020": {
+    "name": "Yashoda Tak",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_GAMMA"
+    ],
+    "primary_role": "Mule Account Manager",
+    "network_roles": {
+      "NET_GAMMA": "Mule Account Manager"
+    }
+  },
+  "ENT_021": {
+    "name": "Ganga Dutta",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_GAMMA"
+    ],
+    "primary_role": "Cash Out Mule",
+    "network_roles": {
+      "NET_GAMMA": "Cash Out Mule"
+    }
+  },
+  "ENT_022": {
+    "name": "Sai Sidhu",
+    "is_criminal": true,
+    "is_bridge": true,
+    "networks": [
+      "NET_GAMMA",
+      "NET_DELTA"
+    ],
+    "primary_role": "Cross-Network Bridge Connector",
+    "network_roles": {
+      "NET_GAMMA": "Bridge Connector (Extortion Financier)",
+      "NET_DELTA": "Bridge Connector (Financier)"
+    }
+  },
+  "ENT_023": {
+    "name": "Deepa Yadav",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_DELTA"
+    ],
+    "primary_role": "Gang Leader / Arms Supplier",
+    "network_roles": {
+      "NET_DELTA": "Gang Leader / Arms Supplier"
+    }
+  },
+  "ENT_024": {
+    "name": "Manan Saran",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_DELTA"
+    ],
+    "primary_role": "Extortion Specialist",
+    "network_roles": {
+      "NET_DELTA": "Extortion Specialist"
+    }
+  },
+  "ENT_025": {
+    "name": "Karan Tella",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_DELTA"
+    ],
+    "primary_role": "Shooter / Enforcer",
+    "network_roles": {
+      "NET_DELTA": "Shooter / Enforcer"
+    }
+  },
+  "ENT_026": {
+    "name": "Manthan Tripathi",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_DELTA"
+    ],
+    "primary_role": "Arms Courier",
+    "network_roles": {
+      "NET_DELTA": "Arms Courier"
+    }
+  },
+  "ENT_027": {
+    "name": "Ridhi Edwin",
+    "is_criminal": true,
+    "is_bridge": false,
+    "networks": [
+      "NET_DELTA"
+    ],
+    "primary_role": "Hideout Caretaker",
+    "network_roles": {
+      "NET_DELTA": "Hideout Caretaker"
+    }
+  },
+  "ENT_028": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_029": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_030": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_031": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_032": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_033": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_034": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_035": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_036": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_037": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_038": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_039": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_040": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_041": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_042": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_043": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_044": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_045": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_046": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_047": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_048": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_049": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_050": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_051": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_052": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_053": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_054": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_055": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_056": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_057": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_058": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_059": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_060": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_061": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_062": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_063": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_064": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_065": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_066": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_067": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_068": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_069": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_070": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_071": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_072": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_073": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_074": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  },
+  "ENT_075": {
+    "name": "",
+    "is_criminal": false,
+    "is_bridge": false,
+    "networks": [],
+    "primary_role": "Uninvolved Civilian",
+    "network_roles": {}
+  }
+}
