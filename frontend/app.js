@@ -8,7 +8,46 @@ document.addEventListener("DOMContentLoaded", () => {
   loadStats();
 });
 
-// Initialize Cytoscape
+// Generic Debounce Utility
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Toast Notification System
+function showToast(message, type = "success") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `<span>${message}</span>`;
+
+  container.appendChild(toast);
+
+  // Trigger animation
+  requestAnimationFrame(() => {
+    toast.classList.add("show");
+  });
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 3500);
+}
+
+// Initialize Cytoscape with High-Contrast Legible Styling
 function initGraph() {
   cy = cytoscape({
     container: document.getElementById("cy"),
@@ -17,37 +56,44 @@ function initGraph() {
         selector: "node",
         style: {
           "label": "data(label)",
-          "color": "#e2e8f0",
+          "color": "#f8fafc",
           "font-size": "11px",
+          "font-weight": "600",
           "font-family": "JetBrains Mono, monospace",
           "text-valign": "bottom",
           "text-margin-y": "6px",
+          "text-outline-color": "#090d16",
+          "text-outline-width": "3px",
+          "text-background-color": "rgba(9, 13, 22, 0.75)",
+          "text-background-opacity": 0.8,
+          "text-background-padding": "3px",
+          "text-background-shape": "roundrectangle",
           "background-color": function(ele) {
             const d = ele.data();
             if (!d.is_criminal) return "#475569";
-            if (d.community === "COMMUNITY_1") return "#ef4444"; // Alpha
-            if (d.community === "COMMUNITY_2") return "#f97316"; // Beta
-            if (d.community === "COMMUNITY_3") return "#a855f7"; // Gamma
-            if (d.community === "COMMUNITY_4") return "#06b6d4"; // Delta
+            if (d.community === "COMMUNITY_1") return "#ef4444"; // Alpha Red
+            if (d.community === "COMMUNITY_2") return "#f97316"; // Beta Orange
+            if (d.community === "COMMUNITY_3") return "#a855f7"; // Gamma Purple
+            if (d.community === "COMMUNITY_4") return "#06b6d4"; // Delta Cyan
             return "#ef4444";
           },
           "width": function(ele) {
             const d = ele.data();
-            if (d.role && d.role.includes("Kingpin")) return 46;
-            if (d.is_bridge) return 38;
-            return 26 + (d.threat_score / 6);
+            if (d.role && d.role.includes("Kingpin")) return 48;
+            if (d.is_bridge) return 40;
+            return 28 + (d.threat_score / 5);
           },
           "height": function(ele) {
             const d = ele.data();
-            if (d.role && d.role.includes("Kingpin")) return 46;
-            if (d.is_bridge) return 38;
-            return 26 + (d.threat_score / 6);
+            if (d.role && d.role.includes("Kingpin")) return 48;
+            if (d.is_bridge) return 40;
+            return 28 + (d.threat_score / 5);
           },
           "border-width": function(ele) {
             const d = ele.data();
             if (d.role && d.role.includes("Kingpin")) return 4;
             if (d.is_bridge) return 3;
-            return 1;
+            return 1.5;
           },
           "border-color": function(ele) {
             const d = ele.data();
@@ -64,13 +110,13 @@ function initGraph() {
         selector: "edge",
         style: {
           "width": function(ele) {
-            return Math.min(6, 1 + (ele.data("weight") || 1) * 0.4);
+            return Math.min(6, 1.5 + (ele.data("weight") || 1) * 0.4);
           },
           "line-color": function(ele) {
             const d = ele.data();
             if (d.txn_count > 0) return "#10b981"; // Financial Green
             if (d.fir_co_count > 0) return "#f43f5e"; // FIR Red
-            return "#334155"; // Default call
+            return "#334155"; // Default Call
           },
           "curve-style": "bezier",
           "opacity": 0.65
@@ -96,7 +142,7 @@ function initGraph() {
       name: "cose",
       animate: true,
       randomize: false,
-      componentSpacing: 100,
+      componentSpacing: 90,
       nodeRepulsion: function(node) { return 450000; },
       nodeOverlap: 20,
       idealEdgeLength: function(edge) { return 100; },
@@ -130,10 +176,13 @@ function highlightNeighborhood(node) {
   neighborhood.addClass("highlighted");
 }
 
-// Fetch network data
+// Fetch network data with loading & error handling
 async function loadNetwork() {
   const loading = document.getElementById("graph-loading");
-  if (loading) loading.style.display = "block";
+  const errorBox = document.getElementById("graph-error");
+
+  if (loading) loading.style.display = "flex";
+  if (errorBox) errorBox.classList.add("hidden");
 
   const minThreat = document.getElementById("threat-slider").value;
   const criminalOnly = document.getElementById("toggle-criminal-only").checked;
@@ -144,6 +193,8 @@ async function loadNetwork() {
   
   try {
     const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    
     const data = await res.json();
     currentNetworkData = data;
 
@@ -154,15 +205,20 @@ async function loadNetwork() {
     cy.layout({
       name: "cose",
       animate: true,
-      animationDuration: 800,
+      animationDuration: 700,
       componentSpacing: 80,
       nodeRepulsion: 400000
     }).run();
 
+    // Update live count pill if available
+    const entCount = document.getElementById("stat-entities");
+    if (entCount) entCount.innerText = data.nodes.length;
+
     if (loading) loading.style.display = "none";
   } catch (err) {
     console.error("Network load failed:", err);
-    if (loading) loading.innerText = "Error loading network graph. Check backend server.";
+    if (loading) loading.style.display = "none";
+    if (errorBox) errorBox.classList.remove("hidden");
   }
 }
 
@@ -170,12 +226,13 @@ async function loadNetwork() {
 async function loadStats() {
   try {
     const res = await fetch("/api/benchmark");
+    if (!res.ok) return;
     const data = await res.json();
     if (data.metrics) {
       document.getElementById("stat-accuracy").innerText = `${data.metrics.accuracy_percent}%`;
     }
   } catch (e) {
-    console.error(e);
+    console.error("Stats load failed:", e);
   }
 }
 
@@ -185,13 +242,18 @@ async function inspectSuspect(eid) {
   const container = document.getElementById("inspector-content");
   panel.classList.remove("hidden");
 
-  container.innerHTML = `<div class="graph-loading">Loading dossier for ${eid}...</div>`;
+  container.innerHTML = `
+    <div class="graph-loading" style="position: relative; top: 0; left: 0; transform: none; margin: 40px auto;">
+      <div class="cyber-spinner"></div>
+      <span>Loading dossier for ${eid}...</span>
+    </div>
+  `;
 
   try {
     const res = await fetch(`/api/entity/${eid}`);
     const data = await res.json();
     if (data.error) {
-      container.innerHTML = `<p>${data.error}</p>`;
+      container.innerHTML = `<p style="color: var(--alpha-red); text-align: center; padding: 20px;">${data.error}</p>`;
       return;
     }
 
@@ -199,7 +261,7 @@ async function inspectSuspect(eid) {
     const scoreClass = data.threat_score >= 70 ? "threat-high" : (data.threat_score >= 30 ? "threat-med" : "threat-low");
 
     let casesHtml = "";
-    if (p.prior_cases.length > 0) {
+    if (p.prior_cases && p.prior_cases.length > 0) {
       p.prior_cases.forEach(c => {
         casesHtml += `
           <div class="fir-item">
@@ -213,7 +275,7 @@ async function inspectSuspect(eid) {
     }
 
     let contactsHtml = "";
-    if (data.top_contacts.length > 0) {
+    if (data.top_contacts && data.top_contacts.length > 0) {
       data.top_contacts.slice(0, 5).forEach(c => {
         contactsHtml += `
           <div class="contact-item">
@@ -227,7 +289,7 @@ async function inspectSuspect(eid) {
     }
 
     let firsHtml = "";
-    if (data.fir_involvements.length > 0) {
+    if (data.fir_involvements && data.fir_involvements.length > 0) {
       data.fir_involvements.forEach(f => {
         firsHtml += `
           <div class="fir-item">
@@ -268,14 +330,14 @@ async function inspectSuspect(eid) {
 
       <div class="section-box">
         <h4>Financial Trail & AML Status</h4>
-        <div class="detail-row"><span class="label">Total Sent:</span><span class="val">₹${data.financial_summary.total_sent_inr.toLocaleString()}</span></div>
-        <div class="detail-row"><span class="label">Total Received:</span><span class="val">₹${data.financial_summary.total_received_inr.toLocaleString()}</span></div>
+        <div class="detail-row"><span class="label">Total Sent:</span><span class="val">₹${(data.financial_summary.total_sent_inr || 0).toLocaleString()}</span></div>
+        <div class="detail-row"><span class="label">Total Received:</span><span class="val">₹${(data.financial_summary.total_received_inr || 0).toLocaleString()}</span></div>
         <div class="detail-row"><span class="label">Smurfing Muling:</span><span class="val">${data.financial_summary.smurf_involved ? '⚠️ FLAGGED' : 'Clean'}</span></div>
         <div class="detail-row"><span class="label">Hawala Transfer:</span><span class="val">${data.financial_summary.hawala_involved ? '⚠️ FLAGGED' : 'Clean'}</span></div>
       </div>
 
       <div class="section-box">
-        <h4>Prior Cases (${data.profile.prior_cases.length})</h4>
+        <h4>Prior Cases (${(p.prior_cases || []).length})</h4>
         ${casesHtml}
       </div>
 
@@ -285,17 +347,36 @@ async function inspectSuspect(eid) {
       </div>
 
       <div class="section-box">
-        <h4>FIR Involvements (${data.fir_involvements.length})</h4>
+        <h4>FIR Involvements (${(data.fir_involvements || []).length})</h4>
         ${firsHtml}
       </div>
     `;
   } catch (err) {
-    container.innerHTML = `<p>Error fetching suspect details: ${err}</p>`;
+    container.innerHTML = `<p style="color: var(--alpha-red); text-align: center;">Error fetching suspect details: ${err}</p>`;
   }
 }
 
+// Download Dossier with Toast Notification
 function downloadDossier(eid) {
+  showToast(`📥 Downloading Case Dossier for ${eid}...`, "success");
   window.open(`/api/dossier/${eid}`, '_blank');
+}
+
+// Reset All Filters
+function resetFilters() {
+  document.getElementById("search-input").value = "";
+  document.getElementById("threat-slider").value = 0;
+  document.getElementById("threat-slider-val").innerText = "0";
+  document.getElementById("toggle-criminal-only").checked = true;
+  document.getElementById("select-syndicate").value = "";
+  document.getElementById("select-role").value = "";
+
+  if (cy) {
+    cy.elements().removeClass("dimmed highlighted");
+  }
+
+  showToast("↺ Filters reset to default view", "info");
+  loadNetwork();
 }
 
 // Setup Event Listeners
@@ -313,10 +394,16 @@ function setupEventListeners() {
   document.getElementById("select-syndicate").addEventListener("change", loadNetwork);
   document.getElementById("select-role").addEventListener("change", loadNetwork);
 
-  // Search
+  // Reset Filters Button
+  const resetBtn = document.getElementById("btn-reset-filters");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", resetFilters);
+  }
+
+  // Debounced Search
   const searchInput = document.getElementById("search-input");
-  searchInput.addEventListener("input", (e) => {
-    const q = e.target.value.toLowerCase().trim();
+  const handleSearch = debounce((query) => {
+    const q = query.toLowerCase().trim();
     if (!q) {
       cy.elements().removeClass("dimmed highlighted");
       return;
@@ -334,7 +421,9 @@ function setupEventListeners() {
     if (matches.length > 0) {
       cy.animate({ center: { eles: matches }, zoom: 1.5, duration: 500 });
     }
-  });
+  }, 250);
+
+  searchInput.addEventListener("input", (e) => handleSearch(e.target.value));
 
   document.getElementById("btn-search-clear").addEventListener("click", () => {
     searchInput.value = "";
@@ -343,44 +432,59 @@ function setupEventListeners() {
 
   // Buttons: Kingpins
   document.getElementById("btn-kingpins").addEventListener("click", async () => {
-    const res = await fetch("/api/kingpins");
-    const data = await res.json();
-    const kingpinIds = data.kingpins.map(k => k.entity_id);
-    
-    cy.elements().addClass("dimmed");
-    const kingpinNodes = cy.nodes().filter(n => kingpinIds.includes(n.id()));
-    kingpinNodes.removeClass("dimmed").addClass("highlighted");
-    cy.animate({ center: { eles: kingpinNodes }, zoom: 1.2, duration: 800 });
+    try {
+      const res = await fetch("/api/kingpins");
+      const data = await res.json();
+      const kingpinIds = data.kingpins.map(k => k.entity_id);
+      
+      cy.elements().addClass("dimmed");
+      const kingpinNodes = cy.nodes().filter(n => kingpinIds.includes(n.id()));
+      kingpinNodes.removeClass("dimmed").addClass("highlighted");
+      cy.animate({ center: { eles: kingpinNodes }, zoom: 1.2, duration: 800 });
+      showToast(`👑 Highlighted ${kingpinIds.length} Syndicate Kingpins`, "info");
+    } catch (e) {
+      console.error(e);
+    }
   });
 
   // Buttons: Bridges
   document.getElementById("btn-bridges").addEventListener("click", async () => {
-    const res = await fetch("/api/bridges");
-    const data = await res.json();
-    const bridgeIds = data.bridges.map(b => b.entity_id);
-    
-    cy.elements().addClass("dimmed");
-    const bridgeNodes = cy.nodes().filter(n => bridgeIds.includes(n.id()));
-    bridgeNodes.removeClass("dimmed").addClass("highlighted");
-    cy.animate({ center: { eles: bridgeNodes }, zoom: 1.3, duration: 800 });
+    try {
+      const res = await fetch("/api/bridges");
+      const data = await res.json();
+      const bridgeIds = data.bridges.map(b => b.entity_id);
+      
+      cy.elements().addClass("dimmed");
+      const bridgeNodes = cy.nodes().filter(n => bridgeIds.includes(n.id()));
+      bridgeNodes.removeClass("dimmed").addClass("highlighted");
+      cy.animate({ center: { eles: bridgeNodes }, zoom: 1.3, duration: 800 });
+      showToast(`🌉 Highlighted ${bridgeIds.length} Cross-Network Bridges`, "info");
+    } catch (e) {
+      console.error(e);
+    }
   });
 
   // Buttons: Smurfing Rings
   document.getElementById("btn-smurfing").addEventListener("click", async () => {
-    const res = await fetch("/api/alerts");
-    const data = await res.json();
-    const ringIds = new Set();
-    data.smurfing_rings.forEach(r => {
-      ringIds.add(r.beneficiary_id);
-      r.mule_senders.forEach(m => ringIds.add(m.id));
-    });
+    try {
+      const res = await fetch("/api/alerts");
+      const data = await res.json();
+      const ringIds = new Set();
+      data.smurfing_rings.forEach(r => {
+        ringIds.add(r.beneficiary_id);
+        r.mule_senders.forEach(m => ringIds.add(m.id));
+      });
 
-    cy.elements().addClass("dimmed");
-    const smurfNodes = cy.nodes().filter(n => ringIds.has(n.id()));
-    const smurfEdges = cy.edges().filter(e => ringIds.has(e.source().id()) && ringIds.has(e.target().id()));
-    smurfNodes.removeClass("dimmed").addClass("highlighted");
-    smurfEdges.removeClass("dimmed").addClass("highlighted");
-    cy.animate({ center: { eles: smurfNodes }, zoom: 1.2, duration: 800 });
+      cy.elements().addClass("dimmed");
+      const smurfNodes = cy.nodes().filter(n => ringIds.has(n.id()));
+      const smurfEdges = cy.edges().filter(e => ringIds.has(e.source().id()) && ringIds.has(e.target().id()));
+      smurfNodes.removeClass("dimmed").addClass("highlighted");
+      smurfEdges.removeClass("dimmed").addClass("highlighted");
+      cy.animate({ center: { eles: smurfNodes }, zoom: 1.2, duration: 800 });
+      showToast(`🚨 Highlighted Smurfing Mule Rings`, "info");
+    } catch (e) {
+      console.error(e);
+    }
   });
 
   // Buttons: Benchmark Scorecard
@@ -422,6 +526,12 @@ function setupEventListeners() {
   document.getElementById("btn-close-inspector").addEventListener("click", () => {
     document.getElementById("inspector-panel").classList.add("hidden");
   });
+
+  // Retry Connection Button
+  const retryBtn = document.getElementById("btn-retry-graph");
+  if (retryBtn) {
+    retryBtn.addEventListener("click", loadNetwork);
+  }
 }
 
 // Open Benchmark Modal
@@ -430,7 +540,12 @@ async function openBenchmarkModal() {
   const content = document.getElementById("benchmark-content");
   modal.classList.add("active");
 
-  content.innerHTML = "<p>Loading live evaluation scorecard against ground truth...</p>";
+  content.innerHTML = `
+    <div class="graph-loading" style="position: relative; top: 0; left: 0; transform: none; margin: 40px auto;">
+      <div class="cyber-spinner"></div>
+      <span>Loading live evaluation scorecard against ground truth...</span>
+    </div>
+  `;
 
   try {
     const res = await fetch("/api/benchmark");
@@ -468,7 +583,7 @@ async function openBenchmarkModal() {
       </div>
     `;
   } catch (err) {
-    content.innerHTML = `<p>Error loading benchmark: ${err}</p>`;
+    content.innerHTML = `<p style="color: var(--alpha-red); text-align: center;">Error loading benchmark: ${err}</p>`;
   }
 }
 
