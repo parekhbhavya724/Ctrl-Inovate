@@ -1,20 +1,15 @@
-# Python Virtual Environment
-.venv/
-venv/
-ENV/
-env/
+# v0 sandbox internal files
+__v0_runtime_loader.js
+__v0_devtools.tsx
+__v0_jsx-dev-runtime.ts
+.snowflake/
+.v0-trash/
+.vercel/
 
-# Byte-compiled / cache files
-__pycache__/
-*.py[cod]
-*$py.class
-*.log
+# Environment variables
+.env*.local
 
-# Operating System Files
+# Common ignores
+node_modules
+.next/
 .DS_Store
-Thumbs.db
-desktop.ini
-
-# IDE files
-.vscode/
-.idea/
