@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+from collections import defaultdict
 from typing import Dict, List, Any
 
 class DataLoader:
@@ -59,7 +60,19 @@ class DataLoader:
                         "date": row.get("date"),
                         "status": row.get("status")
                     })
-                    self.entities[eid]["criminal_status"] = row.get("status")
+                    # Priority: Wanted/Absconding > Convicted > Pending > others
+                    # Only upgrade severity, never downgrade
+                    STATUS_PRIORITY = {
+                        "Wanted": 4, "Absconding": 4,
+                        "Convicted": 3,
+                        "Pending": 2,
+                    }
+                    new_status = row.get("status", "")
+                    current_status = self.entities[eid]["criminal_status"]
+                    new_priority = max((v for k, v in STATUS_PRIORITY.items() if k in new_status), default=1)
+                    cur_priority = max((v for k, v in STATUS_PRIORITY.items() if k in current_status), default=0)
+                    if new_priority > cur_priority:
+                        self.entities[eid]["criminal_status"] = new_status
 
     def _load_cdrs(self):
         path = os.path.join(self.data_dir, "cdrs.csv")
@@ -71,11 +84,15 @@ class DataLoader:
 
     def _load_transactions(self):
         path = os.path.join(self.data_dir, "transactions.csv")
+        self.txns_by_sender = defaultdict(list)
+        self.txns_by_receiver = defaultdict(list)
         with open(path, mode="r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 row["amount"] = float(row["amount"]) if row.get("amount") else 0.0
                 self.transactions.append(row)
+                self.txns_by_sender[row["sender_id"].strip()].append(row)
+                self.txns_by_receiver[row["receiver_id"].strip()].append(row)
 
     def _load_firs(self):
         path = os.path.join(self.data_dir, "firs.csv")

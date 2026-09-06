@@ -30,16 +30,11 @@ class NLPExtractor:
             if veh:
                 self.vehicle_to_eid[veh] = eid
 
-        self.known_orgs = [
-            "Apex Logistics Pvt Ltd", "Apex Logistics",
-            "Devgarh Traders",
-            "Global Cargo Express",
-            "BlueSky Exporters",
-            "CyberTech Solutions",
-            "Golden Crown Holdings",
-            "Shiv Shakti Real Estate",
-            "Star Line Communications"
-        ]
+        self.known_orgs = sorted({
+            ent.get("known_organization", "").strip()
+            for ent in entities.values()
+            if ent.get("known_organization", "").strip()
+        })
 
     def extract_from_fir(self, fir: Dict[str, Any]) -> Dict[str, Any]:
         text = fir.get("narrative_text", "")

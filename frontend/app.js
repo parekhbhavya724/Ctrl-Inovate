@@ -160,6 +160,32 @@ function initGraph() {
     highlightNeighborhood(node);
   });
 
+  // Edge Click -> Show relationship summary in inspector
+  cy.on("tap", "edge", function(evt) {
+    const d = evt.target.data();
+    const srcName = evt.target.source().data("label") || d.source;
+    const tgtName = evt.target.target().data("label") || d.target;
+    const panel = document.getElementById("inspector-panel");
+    const container = document.getElementById("inspector-content");
+    panel.classList.remove("hidden");
+    container.innerHTML = `
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-name-block">
+            <h3>${srcName} ↔ ${tgtName}</h3>
+            <span class="profile-id">Edge Weight: ${d.weight || 1}</span>
+          </div>
+        </div>
+        <div class="section-box">
+          <h4>Relationship Evidence</h4>
+          <div class="detail-row"><span class="label">📞 Calls:</span><span class="val">${d.call_count || 0} (${d.call_duration || 0}s total)</span></div>
+          <div class="detail-row"><span class="label">💸 Transactions:</span><span class="val">${d.txn_count || 0} — ₹${(d.txn_amount || 0).toLocaleString()}</span></div>
+          <div class="detail-row"><span class="label">📋 FIR Co-mentions:</span><span class="val">${d.fir_co_count || 0}</span></div>
+          <div class="detail-row"><span class="label">📱 Social Links:</span><span class="val">${d.social_count || 0}</span></div>
+        </div>
+      </div>`;
+  });
+
   // Background Click -> Reset highlight
   cy.on("tap", function(evt) {
     if (evt.target === cy) {
@@ -214,6 +240,24 @@ async function loadNetwork() {
     const entCount = document.getElementById("stat-entities");
     if (entCount) entCount.innerText = data.nodes.length;
 
+    // Dynamically populate syndicate options if not already populated
+    const syndicateSelect = document.getElementById("select-syndicate");
+    if (syndicateSelect && syndicateSelect.options.length <= 1) {
+      const comms = new Set();
+      data.nodes.forEach(n => {
+        if (n.data && n.data.community && n.data.community !== "UNASSIGNED") {
+          comms.add(n.data.community);
+        }
+      });
+      const sortedComms = Array.from(comms).sort();
+      sortedComms.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        syndicateSelect.appendChild(opt);
+      });
+    }
+
     if (loading) loading.style.display = "none";
   } catch (err) {
     console.error("Network load failed:", err);
@@ -230,6 +274,15 @@ async function loadStats() {
     const data = await res.json();
     if (data.metrics) {
       document.getElementById("stat-accuracy").innerText = `${data.metrics.accuracy_percent}%`;
+    }
+    if (data.confusion_matrix) {
+      const cm = data.confusion_matrix;
+      const criminals = cm.true_positives + cm.false_negatives; // total actual criminals
+      const civilians = cm.true_negatives + cm.false_positives; // total actual civilians
+      const elCrim = document.getElementById("stat-criminals");
+      const elCiv = document.getElementById("stat-civilians");
+      if (elCrim) elCrim.innerText = criminals;
+      if (elCiv) elCiv.innerText = civilians;
     }
   } catch (e) {
     console.error("Stats load failed:", e);
@@ -553,6 +606,14 @@ async function openBenchmarkModal() {
     const m = data.metrics;
     const cm = data.confusion_matrix;
 
+    const gt = data.ground_truth_targets || {};
+    const detectedKingpins = (gt.detected_kingpins || []).join(", ") || "None detected";
+    const detectedBridges  = (gt.detected_bridges  || []).join(", ") || "None detected";
+    const gtKingpins       = (gt.kingpins || []).join(", ") || "N/A";
+    const gtBridges        = (gt.bridges  || []).join(", ") || "N/A";
+    const totalCriminals   = gt.total_criminals ?? "?";
+    const totalCivilians   = gt.total_civilians  ?? "?";
+
     content.innerHTML = `
       <div class="score-grid">
         <div class="score-box"><div class="num">${m.accuracy_percent}%</div><div class="lbl">ACCURACY</div></div>
@@ -565,21 +626,18 @@ async function openBenchmarkModal() {
 
       <div class="section-box" style="margin-bottom: 16px;">
         <h4>Confusion Matrix (N = ${cm.total_eval_samples})</h4>
-        <div class="detail-row"><span class="label">True Positives (Criminals Caught):</span><span class="val" style="color: var(--green-accent);">${cm.true_positives} / 27</span></div>
-        <div class="detail-row"><span class="label">True Negatives (Civilians Protected):</span><span class="val" style="color: var(--green-accent);">${cm.true_negatives} / 48</span></div>
-        <div class="detail-row"><span class="label">False Positives (Innocent Falsely Flagged):</span><span class="val" style="color: var(--green-accent);">${cm.false_positives}</span></div>
-        <div class="detail-row"><span class="label">False Negatives (Criminals Missed):</span><span class="val" style="color: var(--green-accent);">${cm.false_negatives}</span></div>
+        <div class="detail-row"><span class="label">True Positives (Criminals Caught):</span><span class="val" style="color: var(--green-accent);">${cm.true_positives} / ${totalCriminals}</span></div>
+        <div class="detail-row"><span class="label">True Negatives (Civilians Protected):</span><span class="val" style="color: var(--green-accent);">${cm.true_negatives} / ${totalCivilians}</span></div>
+        <div class="detail-row"><span class="label">False Positives (Innocent Falsely Flagged):</span><span class="val" style="color: var(--alpha-red);">${cm.false_positives}</span></div>
+        <div class="detail-row"><span class="label">False Negatives (Criminals Missed):</span><span class="val" style="color: var(--alpha-red);">${cm.false_negatives}</span></div>
       </div>
 
       <div class="section-box">
-        <h4>Syndicate Detection Breakdown</h4>
-        <p style="font-size: 12px; line-height: 1.6; color: var(--text-muted);">
-          • <strong>NET_ALPHA (Hawala / Org)</strong>: Kingpin Advik Maharaj (ENT_001), Lieutenant Charan Chahal (ENT_002), Mules Ira Saini & Aarush Dutta.<br>
-          • <strong>NET_BETA (Logistics Cartel)</strong>: Cartel Boss Balveer Memon (ENT_009), Coordinator Bhavya Bath, Warehouse Mgr Jackson Chaudhuri.<br>
-          • <strong>NET_GAMMA (Cyber / Phishing)</strong>: Tech Lead Suhani Loyal (ENT_016), Mule Manager Yashoda Tak, Phishing Op Hitesh Tata.<br>
-          • <strong>NET_DELTA (Arms / Extortion)</strong>: Gang Leader Deepa Yadav (ENT_023), Extortionist Manan Saran, Courier Manthan Tripathi.<br>
-          • <strong>Bridges Verified</strong>: Ranveer Chatterjee (Alpha-Beta), Nicholas Bhalla (Beta-Gamma), Sai Sidhu (Gamma-Delta).
-        </p>
+        <h4>Detected vs Ground Truth</h4>
+        <div class="detail-row"><span class="label">👑 GT Kingpins:</span><span class="val">${gtKingpins}</span></div>
+        <div class="detail-row"><span class="label">👑 Detected Kingpins:</span><span class="val">${detectedKingpins}</span></div>
+        <div class="detail-row"><span class="label">🌉 GT Bridges:</span><span class="val">${gtBridges}</span></div>
+        <div class="detail-row"><span class="label">🌉 Detected Bridges:</span><span class="val">${detectedBridges}</span></div>
       </div>
     `;
   } catch (err) {
@@ -617,7 +675,20 @@ async function sendCopilotMessage() {
       body: JSON.stringify({ query: query })
     });
     const data = await res.json();
-    botDiv.innerHTML = data.response.replace(/\n/g, "<br>").replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+    // Safe renderer: escape HTML first, then apply trusted markdown only
+    function safeMd(text) {
+      const div = document.createElement("div");
+      div.textContent = text;           // escapes all HTML entities
+      return div.innerHTML
+        .replace(/### (.*?)(\n|$)/g, "<h4>$1</h4>")
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.*?)\*/g, "<em>$1</em>")
+        .replace(/`(.*?)`/g, "<code>$1</code>")
+        .replace(/\n/g, "<br>");
+    }
+
+    botDiv.innerHTML = safeMd(data.response);
     messages.scrollTop = messages.scrollHeight;
   } catch (err) {
     botDiv.innerText = "Error contacting Copilot: " + err;

@@ -97,14 +97,75 @@ class PatternDetector:
                 })
         return clandestine
 
+    def detect_circular_flows(self) -> List[Dict[str, Any]]:
+        """
+        Detects circular money flows (layering): A → B → C → A.
+        Builds a financial-only directed graph from transactions,
+        then finds all simple cycles of length 3–6.
+        """
+        import networkx as nx
+
+        # Build a directed graph of financial transactions only
+        fin_graph = nx.DiGraph()
+        for txn in self.dl.transactions:
+            u = txn["sender_id"].strip()
+            v = txn["receiver_id"].strip()
+            if u != v:
+                if fin_graph.has_edge(u, v):
+                    fin_graph[u][v]["total"] += txn["amount"]
+                    fin_graph[u][v]["count"] += 1
+                else:
+                    fin_graph.add_edge(u, v, total=txn["amount"], count=1)
+
+        alerts = []
+        seen = set()
+        for cycle in nx.simple_cycles(fin_graph):
+            if not (3 <= len(cycle) <= 6):
+                continue
+            key = tuple(sorted(cycle))
+            if key in seen:
+                continue
+            seen.add(key)
+
+            total_flow = sum(
+                fin_graph[cycle[i]][cycle[(i + 1) % len(cycle)]]["total"]
+                for i in range(len(cycle))
+            )
+            members = [
+                {
+                    "id": eid,
+                    "name": self.dl.entities.get(eid, {}).get("name", eid),
+                    "role": self.ge.detected_roles.get(eid, "Unknown"),
+                    "threat_score": self.ge.threat_scores.get(eid, 0)
+                }
+                for eid in cycle
+            ]
+            alerts.append({
+                "alert_id": f"ALERT_CYCLE_{'_'.join(cycle)}",
+                "type": "CIRCULAR_MONEY_FLOW",
+                "severity": "CRITICAL" if total_flow >= 500000 else "HIGH",
+                "cycle_length": len(cycle),
+                "cycle_members": members,
+                "total_flow_inr": round(total_flow, 2),
+                "pattern_summary": (
+                    f"Circular financial flow detected across {len(cycle)} entities: "
+                    f"{' → '.join(self.dl.entities.get(e, {}).get('name', e) for e in cycle)} → (back to start). "
+                    f"Total cycled: ₹{total_flow:,.2f}"
+                )
+            })
+
+        return sorted(alerts, key=lambda x: x["total_flow_inr"], reverse=True)
+
     def get_all_alerts(self) -> Dict[str, Any]:
         smurfing = self.detect_smurfing_rings()
         hawala = self.detect_hawala_channels()
         clandestine = self.detect_clandestine_intel()
-        
+        circular = self.detect_circular_flows()
+
         return {
             "smurfing_rings": smurfing,
-            "hawala_transfers": hawala[:15], # top 15
+            "hawala_transfers": hawala[:15],
             "clandestine_signals": clandestine[:15],
-            "total_critical_alerts": len(smurfing) + len(hawala) + len(clandestine)
+            "circular_money_flows": circular[:10],
+            "total_critical_alerts": len(smurfing) + len(hawala) + len(clandestine) + len(circular)
         }

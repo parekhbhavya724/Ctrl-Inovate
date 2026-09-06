@@ -500,8 +500,8 @@ class CaseCopilot:
         contacts = sorted(contacts, key=lambda x: x["call_count"], reverse=True)
 
         # Transactions
-        sent_txns = [t for t in self.dl.transactions if t["sender_id"] == eid]
-        recv_txns = [t for t in self.dl.transactions if t["receiver_id"] == eid]
+        sent_txns = self.dl.txns_by_sender.get(eid, [])
+        recv_txns = self.dl.txns_by_receiver.get(eid, [])
 
         # FIR mentions
         firs_mentioned = []
@@ -582,10 +582,9 @@ class CaseCopilot:
                 })
 
         transactions = []
-        for t in self.dl.transactions:
-            sender = str(t.get("sender_id", "")).strip()
-            receiver = str(t.get("receiver_id", "")).strip()
-            if sender == target_eid or receiver == target_eid:
+        for t in self.dl.txns_by_sender.get(target_eid, []) + self.dl.txns_by_receiver.get(target_eid, []):
+                sender = str(t.get("sender_id", "")).strip()
+                receiver = str(t.get("receiver_id", "")).strip()
                 is_sender = (sender == target_eid)
                 other_id = receiver if is_sender else sender
                 other_name = self.dl.entities.get(other_id, {}).get("name", other_id)
@@ -645,7 +644,8 @@ class CaseCopilot:
             return {"error": "Invalid entities"}
 
         try:
-            path = nx.shortest_path(self.ge.G, source=source_id, target=target_id, weight=None)
+            path = nx.shortest_path(self.ge.G, source=source_id, target=target_id,
+                                       weight=lambda u, v, d: 1.0 / (d.get("weight", 1.0) + 1e-9))
             path_details = []
             for i in range(len(path) - 1):
                 u, v = path[i], path[i + 1]

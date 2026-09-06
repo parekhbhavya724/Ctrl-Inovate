@@ -32,6 +32,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Optional API Key Authentication Middleware for protected endpoints
+API_KEY = os.environ.get("NETSENTINEL_API_KEY", "").strip()
+
+@app.middleware("http")
+async def verify_api_key(request, call_next):
+    # Only enforce if NETSENTINEL_API_KEY is configured in env
+    if API_KEY:
+        path = request.url.path
+        if path.startswith("/api/dossier") or path.startswith("/api/copilot"):
+            provided_key = request.headers.get("X-API-Key") or request.query_params.get("api_key")
+            if provided_key != API_KEY:
+                return JSONResponse(status_code=401, content={"detail": "Unauthorized: Invalid or missing API Key"})
+    return await call_next(request)
+
 # Initialize engines
 DATA_DIR = os.path.join(PROJECT_DIR, "data")
 dl = DataLoader(DATA_DIR)
