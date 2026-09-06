@@ -94,6 +94,14 @@ def get_entity_profile(eid: str):
         return JSONResponse(status_code=404, content=profile)
     return profile
 
+@app.get("/api/entity/{entity_id}/records")
+def get_entity_records(entity_id: str):
+    records = copilot.get_entity_raw_records(entity_id)
+    if "error" in records:
+        return JSONResponse(status_code=404, content=records)
+    return records
+
+
 @app.get("/api/benchmark")
 def get_benchmark():
     return be.evaluate()

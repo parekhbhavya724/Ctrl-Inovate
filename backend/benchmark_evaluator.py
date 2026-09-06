@@ -1,18 +1,25 @@
 from typing import Dict, Any
 
+
 class BenchmarkEvaluator:
+    """
+    Evaluates the GraphEngine's predictions against ground-truth labels.
+
+    Criminal/civilian classification metrics (accuracy, precision, recall, F1)
+    are computed against ground_truth.json.
+
+    Kingpin and bridge detection rates are computed dynamically by comparing
+    the graph engine's detected sets against the ground-truth roles — no
+    hardcoded entity ID sets anywhere in this evaluator.
+    """
+
     def __init__(self, data_loader, graph_engine):
         self.dl = data_loader
         self.ge = graph_engine
         self.gt = data_loader.ground_truth
 
     def evaluate(self) -> Dict[str, Any]:
-        tp = 0
-        tn = 0
-        fp = 0
-        fn = 0
-
-        # Detailed breakdown
+        tp = tn = fp = fn = 0
         predictions_table = []
 
         for eid, gt_data in self.gt.items():
@@ -44,19 +51,34 @@ class BenchmarkEvaluator:
             })
 
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
-        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-        accuracy = (tp + tn) / len(self.gt) if len(self.gt) > 0 else 0.0
-        f1 = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
+        recall    = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        accuracy  = (tp + tn) / len(self.gt) if len(self.gt) > 0 else 0.0
+        f1        = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
 
-        # Kingpin evaluation
-        gt_kingpins = {"ENT_001", "ENT_009", "ENT_016", "ENT_023"}
-        pred_kingpins = {eid for eid, r in self.ge.detected_roles.items() if "Kingpin" in r}
-        kingpin_recall = len(gt_kingpins.intersection(pred_kingpins)) / len(gt_kingpins)
+        # ── Dynamic Kingpin evaluation ────────────────────────────────
+        # GT kingpins: any entity whose ground-truth primary_role contains "Kingpin"
+        gt_kingpins = {
+            eid for eid, d in self.gt.items()
+            if "Kingpin" in d.get("primary_role", "")
+        }
+        pred_kingpins = {
+            eid for eid, r in self.ge.detected_roles.items()
+            if "Kingpin" in r
+        }
+        kingpin_tp = len(gt_kingpins & pred_kingpins)
+        kingpin_recall = kingpin_tp / len(gt_kingpins) if gt_kingpins else 0.0
 
-        # Bridge evaluation
-        gt_bridges = {"ENT_007", "ENT_015", "ENT_022"}
-        pred_bridges = {eid for eid, b in self.ge.is_bridge_pred.items() if b}
-        bridge_recall = len(gt_bridges.intersection(pred_bridges)) / len(gt_bridges)
+        # ── Dynamic Bridge evaluation ─────────────────────────────────
+        # GT bridges: any entity whose ground-truth is_bridge == true
+        gt_bridges = {
+            eid for eid, d in self.gt.items()
+            if d.get("is_bridge", False)
+        }
+        pred_bridges = {
+            eid for eid, b in self.ge.is_bridge_pred.items() if b
+        }
+        bridge_tp = len(gt_bridges & pred_bridges)
+        bridge_recall = bridge_tp / len(gt_bridges) if gt_bridges else 0.0
 
         return {
             "metrics": {
@@ -65,7 +87,7 @@ class BenchmarkEvaluator:
                 "recall_percent": round(recall * 100, 2),
                 "f1_score": round(f1, 4),
                 "kingpin_detection_rate": round(kingpin_recall * 100, 2),
-                "bridge_detection_rate": round(bridge_recall * 100, 2)
+                "bridge_detection_rate": round(bridge_recall * 100, 2),
             },
             "confusion_matrix": {
                 "true_positives": tp,
@@ -75,10 +97,12 @@ class BenchmarkEvaluator:
                 "total_eval_samples": len(self.gt)
             },
             "ground_truth_targets": {
-                "total_criminals": 27,
-                "total_civilians": 48,
-                "kingpins": list(gt_kingpins),
-                "bridges": list(gt_bridges)
+                "total_criminals": sum(1 for d in self.gt.values() if d["is_criminal"]),
+                "total_civilians": sum(1 for d in self.gt.values() if not d["is_criminal"]),
+                "kingpins": sorted(gt_kingpins),
+                "bridges": sorted(gt_bridges),
+                "detected_kingpins": sorted(pred_kingpins),
+                "detected_bridges": sorted(pred_bridges),
             },
             "sample_results": predictions_table
         }
